@@ -81,6 +81,10 @@ const propertydatabase = [
         "contact": "Adam 050-999999"
     },
 ]
+
+app.get("/", (req,res)=>{
+    console.log("working")
+})
 app.post('/NewUser', (req,res) => {
     const  {name,budget,floor,elevator,parking,rooms,phone} = req.body
     userdatabase.push({
@@ -178,4 +182,4 @@ app.post('/Register', (req,res) => {
 
 
 
-app.listen(4000, )
+app.listen(process.env.PORT || 4000, )
