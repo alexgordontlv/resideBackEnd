@@ -2,11 +2,12 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const { Client } = require('pg');
 const saltRounds = 10;
 let idcount = 4;
 const knex = require('knex')
 
-const db = knex({
+/*const db = knex({
     client: 'pg',
     connection: {
         connectionString: process.env.DATABASE_URL,
@@ -14,8 +15,13 @@ const db = knex({
           rejectUnauthorized: false
         }
     }
-});
-
+});*/
+const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
 
 
 app.use(express.json())
