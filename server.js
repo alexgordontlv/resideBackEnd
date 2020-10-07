@@ -22,6 +22,7 @@ const client = new Client({
       rejectUnauthorized: false
     }
   });
+  client.connect();
 
 
 app.use(express.json())
