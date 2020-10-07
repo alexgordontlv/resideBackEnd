@@ -5,12 +5,14 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 let idcount = 4;
 const knex = require('knex')
-const PORT = process.env.PORT || '8080'
+
 const db = knex({
     client: 'pg',
     connection: {
         connectionString: process.env.DATABASE_URL,
-        ssl: true,
+        ssl: {
+          rejectUnauthorized: false
+        }
     }
 });
 
@@ -18,7 +20,12 @@ const db = knex({
 
 app.use(express.json())
 app.use(cors())
-
+const users = [
+    {
+        email: 'alexaybn@gmail.com',
+        password: 'lopkin'
+    }
+]
 const userdatabase = [
     {
         "id": "1",
@@ -156,7 +163,7 @@ app.post('/SignIn', (req,res) => {
         res.send(false);
     }
     })
-    .catch(err=> res.status(400).json('wrong username or password'))
+    .catch(err=> res.status(400).json('wrong username or pass'))
    
 })
 
@@ -193,5 +200,4 @@ app.post('/Register', (req,res) => {
 
 
 
-app.listen(PORT)
-app.set("port",PORT)
+app.listen(process.env.PORT || 4000, )
