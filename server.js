@@ -4,15 +4,21 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 let idcount = 4;
+const knex = require('knex')
+
+const db = knex({
+    client: 'pg',
+    connection: {
+        connectionString: process.env.DATABASE_URL,
+        ssl: true,
+    }
+});
+
+
 
 app.use(express.json())
 app.use(cors())
-const users = [
-    {
-        email: 'alexaybn@gmail.com',
-        password: 'lopkin'
-    }
-]
+
 const userdatabase = [
     {
         "id": "1",
@@ -139,25 +145,18 @@ app.get('/PropertyList', (req,res) => {
 })
 
 app.post('/SignIn', (req,res) => {
-    const {email , password} = req.body;
-    let success = false;
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-     //   console.log(hash);
-    });
-
-    /*
-    bcrypt.compare(myPlaintextPassword, hash, function(err, result) {
-        // result == true
-    });*/
-    users.forEach(user=> {
-        if(user.password === password && user.email === email){
-           success = true;
-    }})
-    if ( success) {
+    const {recivedemail , password} = req.body;
+    db.select('email','hash').from('login')
+    .where('email','=',recivedemail)
+    .then(data=>{
+       const isValid = bcrypt.compareSync(password,data[0].hash);
+       if ( isValid) {
         res.send(true);
     }else {
         res.send(false);
     }
+    })
+    .catch(err=> res.status(400).json('wrong username or password'))
    
 })
 
@@ -165,19 +164,31 @@ app.post('/SignIn', (req,res) => {
 
 app.post('/Register', (req,res) => {
     const {email , password} = req.body;
-    users.push({email,password});
-    console.log(users[users.length-1]);
+    const hash = bcrypt.hashSync(password);
+    db.transaction(trx => {
+        trx.insert({
+            hash:hash,
+            email:email
+        })
+        .into('login')
+        .returning('email')
+        .then(loginEmail =>{
+            return trx('users')
+            .returning('*')
+            .insert({
+                email:loginEmail[0],
+            //  name: name add a name here!
+            })
+        .then(user =>{
+            res.json(user[0]);
+        })
+        })
+        .then(trx.commit)
+        .catch(trx.rollback)
+    })
+        
+    .catch(err =>res.status(400).json('unable to register'));
     res.send(true)
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-      //  console.log(hash);
-   
-    });
-
-    /*
-    bcrypt.compare(myPlaintextPassword, hash, function(err, result) {
-        // result == true
-    });*/
-
 })
 
 
