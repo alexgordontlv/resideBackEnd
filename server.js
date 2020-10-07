@@ -83,7 +83,7 @@ const propertydatabase = [
 ]
 
 app.get("/", (req,res)=>{
-    console.log("working")
+    res.send("working with heroku")
 })
 app.post('/NewUser', (req,res) => {
     const  {name,budget,floor,elevator,parking,rooms,phone} = req.body
