@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 let idcount = 4;
 const knex = require('knex')
-
+const PORT = process.env.PORT || '8080'
 const db = knex({
     client: 'pg',
     connection: {
@@ -193,4 +193,5 @@ app.post('/Register', (req,res) => {
 
 
 
-app.listen(process.env.PORT || 4000, )
+app.listen(PORT)
+app.set("port",PORT)
