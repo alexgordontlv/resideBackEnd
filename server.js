@@ -7,22 +7,22 @@ const saltRounds = 10;
 let idcount = 4;
 const knex = require('knex')
 
-/*const db = knex({
-    client: 'pg',
+const db = knex({
+    client: 'postgres',
     connection: {
         connectionString: process.env.DATABASE_URL,
-        ssl: {
-          rejectUnauthorized: false
-        }
+        ssl: true,
     }
-});*/
-const client = new Client({
+});
+
+
+/*const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
     }
   });
-  client.connect();
+  client.connect();*/
 
 
 app.use(express.json())
