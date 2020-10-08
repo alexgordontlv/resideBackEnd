@@ -161,7 +161,7 @@ app.post('/Register', (req,res) => {
     const hash = bcrypt.hashSync(password);
     const text = 'INSERT INTO users(name, email) VALUES($1, $2) RETURNING *'
     const values = ['brianc', 'brian.m.carlson@gmail.com']
-    client
+   /* client
     .query(text, values)
     .then(res => {
       console.log(res.rows[0]);
@@ -169,7 +169,9 @@ app.post('/Register', (req,res) => {
       System.out.println(res.rows[0]);
       // { name: 'brianc', email: 'brian.m.carlson@gmail.com' }
     })
-    .catch(e => console.error(e.stack))
+    .catch(e => console.error(e.stack))*/
+    client.query("select * from users")
+    .then(result => res.send(result.rows))
 
 })
 
