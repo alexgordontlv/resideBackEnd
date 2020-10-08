@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const path = require('path');
 const { Client } = require('pg');
 const saltRounds = 10;
 let idcount = 4;
