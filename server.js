@@ -151,7 +151,7 @@ app.get('/PropertyList', (req,res) => {
 app.post('/SignIn', (req,res) => {
     const {email , password} = req.body;
     const isValid = bcrypt.compareSync(password, data[0].hash);
-     
+     res.send("ok signed in");
 })
 
 
