@@ -148,7 +148,7 @@ app.get('/PropertyList', (req,res) => {
     res.send(propertydatabase)
 })
 
-app.post('/SignIn', (req,res) => {
+app.get('/SignIn', (req,res) => {
     const {email , password} = req.body;
     const isValid = bcrypt.compareSync(password, data[0].hash);
      res.send("ok signed in");
@@ -156,7 +156,7 @@ app.post('/SignIn', (req,res) => {
 
 
 
-app.post('/Register', (req,res) => {
+app.put('/Register', (req,res) => {
     const {email , password} = req.body;
     const hash = bcrypt.hashSync(password);
     const text = 'INSERT INTO users(name, email) VALUES($1, $2) RETURNING *'
