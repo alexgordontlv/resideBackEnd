@@ -92,6 +92,11 @@ const propertydatabase = [
     },
 ]
 
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'build', 'index.html'));
+  });
+
+
 app.get("/", (req,res)=>{
     res.send("working with heroku")
 })
