@@ -152,7 +152,7 @@ app.get('/UserList', (req,res) => {
 app.get('/PropertyList', (req,res) => {
     res.send(propertydatabase)
 })
-app.set('signin', path.join(__dirname, './SignIn'));
+
 app.get('/SignIn', (req,res) => {
     const {email , password} = req.body;
     const isValid = bcrypt.compareSync(password, data[0].hash);
