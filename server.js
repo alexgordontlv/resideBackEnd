@@ -165,7 +165,7 @@ app.post('/Register', (req,res) => {
     .query(text, values)
     .then(res => {
       console.log(res.rows[0]);
-      System.out.println("Hello, logs!");
+      res.send(res.rows[0])
       System.out.println(res.rows[0]);
       // { name: 'brianc', email: 'brian.m.carlson@gmail.com' }
     })
