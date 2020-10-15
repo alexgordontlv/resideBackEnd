@@ -3,15 +3,17 @@ const app = express();
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { Client } = require('pg');
 const saltRounds = 10;
+const { Client } = require('pg');
 let idcount = 4;
 
 const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false
-    }
+    user: 'postgres',
+    host: 'localhost',
+    database: 'residedb',
+    password: 'lopkin',
+    port: 5433,
+    
   });
   client.connect();
 
@@ -56,6 +58,7 @@ const userdatabase = [
 
 const propertydatabase = [
     {
+        "id": "1",
         "address": "Shlomo Hamelekh 35",
         "floor": "2",
         "rooms": "2.5",
@@ -65,6 +68,7 @@ const propertydatabase = [
         "contact": "Marvin 050-999999"
     },
     {
+        "id": "2",
         "address": "Frishman 13",
         "floor": "4",
         "rooms": "3",
@@ -74,6 +78,7 @@ const propertydatabase = [
         "contact": "Oded 050-999999"
     },
     {
+        "id": "3",
         "address": "Ben Gurion 10",
         "floor": "3",
         "rooms": "4",
@@ -83,6 +88,7 @@ const propertydatabase = [
         "contact": "Adam 050-999999"
     },
     {
+        "id": "4",
         "address": "Ben Gurion 33",
         "floor": "3",
         "rooms": "4",
@@ -117,6 +123,7 @@ app.post('/NewUser', (req,res) => {
 app.post('/NewProperty', (req,res) => {
     const  {address,price,floor,elevator,parking,rooms,contact} = req.body
     propertydatabase.push({
+        id:(idcount++),
         address,
         contact,
         price,
@@ -134,13 +141,23 @@ app.delete('/DeleteUser', (req,res) => {
     for(let i = 0; i < id.length; i++){
         for(let j = 0; j< userdatabase.length; j++){
             if(userdatabase[j].id === id[i]){
-                console.log(userdatabase[j])
                 userdatabase.splice(j,1);
-         
             }
         }
     }
-   res.send('delete')
+   res.send(userdatabase);
+})
+
+app.delete('/DeleteProperty', (req,res) => {
+    const {id} = req.body;
+    for(let i = 0; i < id.length; i++){
+        for(let j = 0; j< propertydatabase.length; j++){
+            if(propertydatabase[j].id === id[i]){
+                propertydatabase.splice(j,1);
+            }
+        }
+    }
+   res.send(propertydatabase);
 })
 
 app.get('/UserList', (req,res) => {
@@ -151,31 +168,45 @@ app.get('/PropertyList', (req,res) => {
     res.send(propertydatabase)
 })
 
-app.get('/SignIn', (req,res) => {
+app.post('/SignIn', (req,response) => {
     const {email , password} = req.body;
-    const isValid = bcrypt.compareSync(password, data[0].hash);
-     res.send("ok signed in");
+    let isValid =false;
+    const query = {
+        // give the query a unique name
+        name: 'fetch-user',
+        text: 'SELECT * FROM users WHERE email = $1',
+        values: [email],
+      }
+      client.query(query, (err, res) => {
+        if (err) {
+          console.log(err.stack)
+        } else {
+          console.log(res.rows[0])
+          bcrypt.compare(password, res.rows[0].hash).then(function(result) {
+              response.send(result);
+        }).catch(err=>{console.log(err)})
+        }
+      })
 })
 
 
 
-app.put('/Register', (req,res) => {
-    const {email , password} = req.body;
-    const hash = bcrypt.hashSync(password);
-    const text = 'INSERT INTO users(name, email) VALUES($1, $2) RETURNING *'
-    const values = ['brianc', 'brian.m.carlson@gmail.com']
-   /* client
-    .query(text, values)
-    .then(res => {
-      console.log(res.rows[0]);
-      res.send(res.rows[0])
-      System.out.println(res.rows[0]);
-      // { name: 'brianc', email: 'brian.m.carlson@gmail.com' }
+app.post('/Register', (req,res) => {
+    const {name,email , password} = req.body;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hash = bcrypt.hashSync(password, salt);
+    const text = 'INSERT INTO users(name, email,hash) VALUES($1, $2, $3) RETURNING *'
+    const values = [name, email ,hash]
+    client.query(text, values, (err, res) => {
+        if (err) {
+        console.log(err.stack)
+        } else {
+        console.log(res.rows[0])
+        }
     })
-    .catch(e => console.error(e.stack))*/
-    client.query("select * from users")
-    .then(result => res.send(result.rows))
 
+
+ 
 })
 
 
