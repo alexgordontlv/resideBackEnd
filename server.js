@@ -6,7 +6,7 @@ const path = require('path');
 const saltRounds = 10;
 const { Client } = require('pg');
 let idcount = 4;
-
+/*
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
@@ -16,7 +16,7 @@ const client = new Client({
     
   });
   client.connect();
-
+*/
 
 app.use(express.json())
 app.use(cors())
